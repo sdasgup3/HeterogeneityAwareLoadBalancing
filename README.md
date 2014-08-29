@@ -1,2 +1,2 @@
-OptimizingPowerAllocation
-=========================
+Abstract
+Different processors across the nodes have differ- ent execution times for the same work-loads. This performance imbalance is seen only when the CPU power is capped to low values. This performance imbalance causes increased execution times of the parallel applications. We propose a power aware load balancer which minimizes the performance imbalance at the lower power caps by tackling this heterogeneity.
