@@ -1,0 +1,21 @@
+\documentclass{article}
+\usepackage{tikz}
+\usepackage{pgfplotstable}
+\usepackage{pgfplots}
+\begin{document}
+
+\begin{tikzpicture}
+\begin{axis}[
+ xlabel=  Power Cap Values (W),
+ ylabel = Max Idle Time (secs),
+ ymax=31, ymin=6, xmax=60, xmin=23,
+ x tick label style={black},
+ grid=both
+ ]
+\addplot table [x=POWER, y= WOLB_MAX_IDLE_P]{data.dat};
+\addlegendentry {Without LB}
+\end{axis}
+\end{tikzpicture}
+
+ 
+\end{document}

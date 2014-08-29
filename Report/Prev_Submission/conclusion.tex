@@ -1,0 +1,36 @@
+We observed that the execution time increases with decrease in CPU power, but
+the rate at which it increases was seen to be different with some nodes
+performing better than others, leading to performance heterogeneity. This leads
+to some nodes exhibiting higher performance than others, and thus such nodes
+tend to have higher idle-times waiting for other slower ones to complete their
+iteration, before the next iteration could be started. Heterogeneity is
+measured in terms of average idle times of the nodes in the cluster. This
+heterogeneity becomes significant when the power is pulled down to the allowed
+minimum. This load imbalance leads to more wait times among the nodes and thus
+there is scope to minimize the imbalance by having a power aware load balancer
+that gathers information of the initial few iterations and then based on the
+collected information about the frequency and workload of different nodes,
+          tries to bring down the idle times.  
+ 
+To help mitigate this performance imbalance, we developed a power-aware load
+balancer that helps in minimizing the heterogeneity. Our load balancer
+performed better than the existing power-unaware load balancers in the Charm++
+framework. It helped reduced the existing amount of heterogeneity and achieve a
+maximum speed up of 1.3x with respect to other load balancers when used with
+Jacobi2d application. 
+
+
+The current limitation with this load balancer is that it does not take into
+account the size of the workload on a particular node. This limits its usage in
+the applications where the object size varies with time. One such applications
+that we studied for heterogeneity at lower power regions was LeanMD, where
+there is particle migration happening as the application executes leading to
+different object sizes at different times. 
+
+Our future work aims at making our power-aware load balancer aware of the
+changing size of the workload, and thus incorporating this parameter while
+balancing the workload among the various nodes. This work also involves
+periodic invocation of the load balancer in order to keep the idle times
+minimized. This has to be done carefully, keeping the overall load balancing
+workload to the minimum.
+

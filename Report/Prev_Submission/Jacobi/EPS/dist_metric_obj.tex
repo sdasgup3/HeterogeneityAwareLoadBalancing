@@ -1,0 +1,28 @@
+\documentclass{article}
+\usepackage{tikz}
+\usepackage{pgfplotstable}
+\usepackage{pgfplots}
+\begin{document}
+
+\begin{tikzpicture}
+\begin{axis}[
+ title = , 
+ xlabel=  Core Ids,
+ ylabel= Time (secs),
+ ymax=58, ymin=11, xmax=60, xmin=0,
+ x tick label style={black},
+ grid=both
+ ]
+%\addplot table [x=PE, y=BG]{data2.dat};
+%\addlegendentry {Overhead}
+\addplot table [x=PE, y=OBJ]{data2.dat};
+\addlegendentry {Collective Chare Time}
+%\addplot table [x=PE, y=I]{data2.dat};
+%\addlegendentry {Idle Time}
+\end{axis}
+\end{tikzpicture}
+
+ 
+\end{document}
+%0 4.877367 2.008364 5.643303 2.833776
+%1 17.578722 17.827791 14.226818 10.759991

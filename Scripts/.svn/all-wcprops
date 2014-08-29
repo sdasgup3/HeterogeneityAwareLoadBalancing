@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/sp14-cs533_charm/!svn/ver/101/Scripts
+END
+averageTimePerPe.pl
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/sp14-cs533_charm/!svn/ver/6/Scripts/averageTimePerPe.pl
+END
+totalTimeForEachChar.py
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/sp14-cs533_charm/!svn/ver/6/Scripts/totalTimeForEachChar.py
+END
+pePerChar.py
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/sp14-cs533_charm/!svn/ver/6/Scripts/pePerChar.py
+END
+killzombie
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/sp14-cs533_charm/!svn/ver/50/Scripts/killzombie
+END
+parseAndPlot.py
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/sp14-cs533_charm/!svn/ver/135/Scripts/parseAndPlot.py
+END
+leanmd_parsing.py
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/sp14-cs533_charm/!svn/ver/154/Scripts/leanmd_parsing.py
+END
+setpowerlimits
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/sp14-cs533_charm/!svn/ver/69/Scripts/setpowerlimits
+END
+auto_power_cap.py
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/sp14-cs533_charm/!svn/ver/121/Scripts/auto_power_cap.py
+END
