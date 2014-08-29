@@ -1,0 +1,124 @@
+In this section, we describe our experimental setup that includes
+applications, testbed information. We also discussed about the Charm++
+language with which these applications are written and also elaborate about
+its dynamic load balancing feature.
+
+\subsection{Applications}
+We used two applications, namely, Jacobi2D \& LeanMD\cite{leanmd} from the
+Charm++ test repository.  We have manually modified these applications so that
+to get the precise timing measurements.  These applications have different CPU
+and memory usage.
+\begin{description}
+\item[Jacobi2D] \hspace{1mm}
+
+A 5-point stencil \textbf{memory-bound} application that computes the transmission of heat over a
+discretized 2D grid. The global 2D grid is divided into smaller blocks that are
+processed in parallel. It is an iterative application where all processors
+synchronize at the end of each iteration. As is the case in a stencil
+computation, each grid point is the average of the neighboring 5 points.
+For example, the new value for element X is the current
+value of X plus the current values of its left, right, top, and
+bottom neighbors. 
+\begin{center}       
+          T    \\
+        L X R  \\
+          B    \\
+\end{center}       
+X'  = (X + L + R + T + B) / 5.0
+
+Neighboring blocks communicate the ghost layers with each other so that
+averaging computations are done for all cells inside each block. This
+application is implemented in Charm++ using a 2D chare array.
+
+\item [LeanMD] \hspace{1mm}
+
+LeanMD \cite{leanmd} is a \textbf{computationally intensive} molecular dynamics application.
+This benchmark simulates atomic interaction based on Lennard-Jones potential.
+
+
+LeanMD is a molecular dynamics simulation application written in Charm++ for
+PetaFLOPs class supercomputers. It is being developed as the next generation of
+NAMD \cite{namd}, one of the parallel
+applications winning the Gordon Bell Award in SC2002. NAMD, as a
+state-of-the-art parallel molecular dynamics application that is also written
+in Charm++, has already been proven to be able to scale to 3000 processors.
+However, it is not ready for next generation parallel machines with hundreds of
+thousands, or even millions, of processors due to the limited parallelism
+exploited in the application.  Clearly, it requires a new parallelization
+strategy that can break up the problem in a more fine-grained manner to
+effectively distribute work across the extremely large number of processors.
+With that outlook in mind, LeanMD is being developed as an experimental code.
+
+LeanMD computes the interaction forces based on Lennard-Jones forces amongst
+particles in a 3D space. It does not include any long range force calculation.
+The object decomposition is achieved using a scheme similar to NAMD. The 3D
+space is divided into hyper-rectangles, called cells or patches in NAMD’s
+nomenclature, each containing a subset of particles. A compute object is
+responsible for the force calculations between each pair of cells. In each
+computation of the application, each cell sends its particle data to all
+computes objects attached to it and receives the updates from those computes
+objects. This mini-application is implemented using Charm++ where the set of
+cells and compute objects are represented by chare arrays.
+\end{description}
+
+\subsection {Testbed}
+Our testbed is a 60-node Dell PowerEdge R620 cluster installed at the
+Department of Computer Science, University of Illinois at Urbana-Champaign.
+Each node is an Intel Xeon E5-2620 Sandy-bridge server with 6 physical cores @
+2GHz, 2-way SMT with 16GB of DRAM.  The Intel Sandy Bridge processor family
+supports on board power measurement and capping through the Running Average
+Power Limit (RAPL) interface \cite{rapl}.  The Sandy Bridge architecture has
+four power planes: Package (PKG), Power Plane 0 (PP0), Power Plane 1 (PP1) and
+DRAM. RAPL is implemented using a series of Machine Specifics Registers (MSRs)
+  which can be accessed to get power readings for each power plane. RAPL
+  supports power capping PKG, PP0 and DRAM power planes by writing into the
+relevant MSRs. The package power\footnote{Package corresponds to the processor
+  chip that hosts processing cores, caches and memory controller} for our
+testbed can be capped in the range 25W to 95W (71 integer power levels) while
+the memory power can be capped between 8W to 35W (28 integer power levels). The
+average base power per node for our cluster was 38 watts.  The base power was
+measured using the in-built power meters on the Power Distribution Unit (PDU)
+  that powers our cluster.  
+
+In our experiments we will \textbf{NOT} be capping the
+memory power as our work is focused on studying the heterogeneity that comes up at
+lower CPU power. The effect of lower memory power on heterogeneity is not
+discussed.
+
+\subsection {Charm++ and Load Balancing} 
+For this research, we used Charm++ programming paradigm which supports
+dynamic object migration to improve performance of a parallel
+application\cite{KaleCharm}.  It relies on techniques such as processor
+virtualization and over-decomposition (having more work units than the
+    number of cores) to improve performance via adaptive overlap of
+computation and communication and data-driven execution.  Charm++ gives the
+freedom to the programmer to define program into multiple grain size objects
+which can be migrated across the cores. The programmer need not make the
+application core aware. This multiple objects defined by the programmer is
+moved around during program execution by adaptive runtime system not only
+for load balancing purposes but also for communication optimization and
+fault tolerance. Load balancer keeps the statistics of all the migratable
+objects for effective load balancing act\cite{appBalancer99}.  The runtime
+system provides load balancing strategies that can account for different
+application characteristics.  Application programmers can provide their own
+implementation of load balancers based on the characteristics of the
+application and the ecosystem under which it is run.
+     
+     In this study we first observed the effect of an existing Charm++ load
+     balancer, RefineLB, on mitigating the node heterogeneity at lower power
+     caps.  RefineLB uses an algorithm that strives to reduce the cost of
+     migration by moving only a few objects from overloaded processors to
+     underloaded ones so that load of all processors gets close to the
+     average.  This is done by examining every object on an overloaded
+     processor and looking for the best choice of an underloaded processor
+     to migrate the object to\cite{Zheng}.   
+     
+     In this work, we are planning to develop a power aware  load balancer
+     in the sense that it will use aggressive approach to mitigate the load
+     imbalance at lower power cap. By aggressive we mean it will take lesser
+     time than the existing load balancer to achieve good amount of load
+     balance.
+
+
+
+
