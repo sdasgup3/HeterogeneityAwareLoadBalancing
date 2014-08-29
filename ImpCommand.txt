@@ -1,0 +1,47 @@
+git clone http://charm.cs.uiuc.edu/gerrit/charm
+cd charm
+./build charm++ net-linux-x86_64 [ --with-production | -g ]
+cd /home/sdasgup3/charm/examples/charm++/jacobi2d-iter
+./charmrun +p12 ++nodelist /home/gooli2/sp14-cs533_charm/Doc/nodes12 ./jacobi2d 8000 8000 400 400  10 +setcpuaffinity +pemap 0-5
+
+
+
+./charmrun +p60 ++nodelist ~/sp14-cs533_charm/Doc/nodes12 ./jacobi2d 16000 9600 800 800 15 +setcpuaffinity +pemap 0-5
+./charmrun +p6 ++nodelist ~/sp14-cs533_charm/Doc/nodes12 ./jacobi2d 16000 9600 800 800 1 +setcpuaffinity +pemap 0-5 +balancer RefineLB  +LBDebug 5
+~sarood1/fa12-cs598lvk-project/util/power_gov/setpowerlimits 60 80
+the first is CPU power cap the second is memory .. CPU is 22-60
+./msr to read the power
+
+
+to make load balancers
+make loadbalancers
+
+
+
+
+~/Scripting/nodes12: a local file
+======================
+group main ++shell ssh
+host tarekc41
+host tarekc41
+host tarekc41
+host tarekc41
+host tarekc41
+host tarekc41
+
+host tarekc42
+host tarekc42
+host tarekc42
+host tarekc42
+host tarekc42
+host tarekc42
+
+ssh-keygen -t dsa
+cd ~/.ssh
+cp id_dsa.pub authorized_keys
+chmod 0600 authorized_keys
+
+==============================================================
+
+
+
