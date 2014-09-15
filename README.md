@@ -10,3 +10,11 @@ The examples of (2) can be found from charm/ tmp/ckgraph.h and of (3) can be fou
 Also two understand the work already done on this we should go through some of the papers from  http://charm.cs.uiuc.edu/people/osmansarood
 
 So in brief the goal is that the proposed lbd will decide on the optimal power distribution,  poser cap the cores accordingly  and based on that will distribute the chares loads on them.
+
+
+Proposal
+========
+
+The proposed lbd will Optimize the numbers of nodes (n), the CPU power level
+(pc) and memory power level (pm), that minimizes execution
+time (t) of an application under a strict power budget (P), and based on the current distribution will migrate the chares on the nodes.
