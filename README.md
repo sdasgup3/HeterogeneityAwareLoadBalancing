@@ -27,4 +27,5 @@ Idea:
   2. Load Redistributor picks out *few* of them for sampling (Flicker uses 2 techniques to sample). It runs these on the cluster and gathers throughput data.
   3. Based on these sampled data points, a response surface model is created for T (throughput/performance). See Flicker for details on response surface models. Flicker uses RBF (Radially Baised Functions). Basically these produce function the T(n,p1,p2) after reading in the sampled data points. We can use this function to get the T at any [n,p1,p2] now.
   4. We now need to find the [n,p1,p2] such that T is maximized under the constraint that n*p1*p2 < PowerBudgetAllocated to app. Again we can't search the entire space N X P1 X P2. Flicker uses genetic algorithm to find the close-to-best (n,p1,p2)
+  5. In case we find that the power cap configurartion seletced leads to heterogeinity among the participating nodes (which will happen if the chozen power is low), then we can use our "heterogeinity aware" load balancer to balance the load among the nodes"
 </main>
