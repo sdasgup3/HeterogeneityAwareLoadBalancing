@@ -1,0 +1,9 @@
+module PowerCapRefineLB {
+
+extern module CentralLB;
+initnode void lbinit(void);
+group [migratable] PowerCapRefineLB : CentralLB {
+  entry void PowerCapRefineLB(const CkLBOptions &);
+};
+
+};
