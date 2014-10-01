@@ -1,0 +1,17 @@
+The idea  is drawn from the future guidelines of the work by Osman et
+al.\cite{powerCluster2013} and \cite{osmanthesis}.  It has been empirically
+observed that under the same power cap, different nodes yield different
+application performance. This can be due to several design factors: difference
+in chip designs, different in component assembly by the machine vendor,
+   location of the node in the data center, difference in component design such
+   as fans, etc. This difference in the design causes load imbalance across
+   nodes despite same allocated power and equal compute load. Moreover we are
+   going to experimentally show that this heterogeneity in nodes is more
+   prominent at lower power caps.  Our goal is to minimize the load imbalance
+   in the presence of such heterogeneity in nodes using the over-decomposition
+   and dynamic object migration features of Charm++\cite{ChareKernelICPP90}. 
+
+The rest of the presentation is organized as follows. Section~\ref{sec:approach}
+depicts the detailed approach of our work. Section~\ref{sec:expr} gives the
+experimental setup used and the results obtained. Finally the
+Section~\ref{sec:fw} points out the conclusion and the future work.

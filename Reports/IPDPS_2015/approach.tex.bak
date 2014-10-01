@@ -1,0 +1,254 @@
+Our first contribution is to show that at lower power capping values, different
+nodes show prominent heterogeneity in their runtime performance.  In this work,
+      we use Intel's power\_gov library\cite{power_gov} that in turn uses RAPL
+      \cite{rapl} to cap power of memory and package\footnote{Package
+        corresponds to the processor chip that hosts processing cores, caches
+          and memory controller} subsystems.
+
+
+We define heterogeneity at a given power cap in terms of idle waiting times of
+the cores at that power cap.  We defined the idle waiting time of a core at a
+given power cap in the following two ways: 
+\\ 
+\\
+\noindent At a given power cap, let  $t_{i}, 1\leq i \leq C$  be the overall
+execution time of the core $i$ for a particular application and $T$ be the
+total execution time of the application.  
+
+\begin{description}
+  \item[Percentage Average idle waiting time, $I_{av}$] \hfill \\ 
+    \begin{equation} \label{eq:1}
+      I_{av} = \frac{\displaystyle\sum\limits_{i=0}^P (\displaystyle\max_{1\leq j \leq C} ( t_{j} ) - t_{i})}{C}
+    \end{equation}
+  \item[Percentage Max idle waiting time, $I_{m}$] \hfill \\
+    \begin{equation} \label{eq:2}
+      I_{m} = \displaystyle\max_{1\leq j \leq C} ( t_{j} ) -  \displaystyle\min_{1\leq i \leq C} ( t_{i} )
+    \end{equation}
+\end{description}
+
+Figure \ref{fig:1} shows that at lower power caps the
+idle waiting times (\eqref{eq:1} and \eqref{eq:2}) are having higher values as
+compared to those at higher power caps. 
+
+\begin{figure}
+\begin{tabular}{c c}
+  \scalebox{0.45}{
+    \begin{tikzpicture}
+    \begin{axis}[
+     xlabel=  Power Cap Values (W),
+     ylabel = Average Idle Time (secs),
+     ymax=12, ymin=0, xmax=60, xmin=23,
+     x tick label style={black},
+     grid=both
+     ]
+    \addplot table [x=POWER, y= WOLB_AV_IDLE]{data.dat};
+    \addlegendentry {Without LB}
+    \end{axis}
+    \end{tikzpicture}
+  }
+& 
+  \scalebox{0.45}{
+    \begin{tikzpicture}
+    \begin{axis}[
+    xlabel=  Power Cap Values (W),
+    ylabel = Max Idle Time (secs),
+    ymax=31, ymin=6, xmax=60, xmin=23,
+    x tick label style={black},
+    grid=both
+    ]
+    \addplot table [x=POWER, y= WOLB_MAX_IDLE_P]{data.dat};
+    \addlegendentry {Without LB}
+    \end{axis}
+    \end{tikzpicture}
+  }
+\\
+\end{tabular}
+\caption{Behavior of idle waiting times at lower power caps}
+\label{fig:1}
+\end{figure}
+
+
+Our second contribution is to attempt to minimize the above heterogeneity using
+the Charm++ load balancers.  We first tried out with the existing load
+balancers like \emph{RefineLB} to evaluate the its effect in minimizing the
+heterogeneity. We are not getting much improvement with the existing load
+balancers (as shown in Chapter \ref{sec:expr}) because these load balancers are
+under the assumption  that all the cores are having the same compute power at
+all power caps.  (i.e. they are not considering heterogeneity that comes up at
+    lower power capping values. 
+
+ Next we are planning to write a power aware Charm++ load balancer which is
+ capable of migrating work loads based on the runtime performance of cores at a
+ given power cap.
+
+ 
+\subsection{Existing Load-balancers}
+Load balancing is a technique of distributing computational and communication
+load evenly across processors of a parallel machine so that no single processor
+is overloaded.  Charm++ implements a generic, measurement-based load balancing
+framework which automatically instruments all Charm++ objects, collects
+computation load and communication structure during execution and stores them
+into a load balancing database. Charm++ then provides a collection of load
+balancing strategies whose job it is to decide on a new mapping of objects to
+processors based on the information from the database. 
+These strategies work under the assumption that objects in a
+Charm++ application tend to exhibit temporal correlation in their computation
+and communication patterns, i.e. future can be to some extent predicted using
+the historical measurement data, allowing effective measurement-based load
+balancing without application-specific knowledge.
+
+Following are the two widely used load balancing strategies are:
+
+\begin{flushleft}
+\textbf{\normalsize{RefineLB}}
+\end{flushleft}
+
+The objective of this strategy is to move objects away from the most
+overloaded processors to reach an average.
+
+Following is the pseudo-algorithm of this strategy:
+
+\begin{algorithm}[H]
+ \KwData{V$_t$:(the set of objects; V$_p$ (the set of processors)}
+ \KwResult{Map:V$_t \rightarrow $ V$_p$ (An object mapping) }
+ // build heap \;
+  ProcessorHeap heavyProcs(V$_p$)\;
+  Set *lightProcs\;
+  \While{!done} {
+    donor =   heavyProcessors$\rightarrow$deleteMax()\;
+    \While{ligthProcs} {
+      (obj, lightProc)  $\leftarrow$ BestObjFromDonor(donor)\;
+      \If{obj.load + lightProc.load $>$ avg\_load} {
+        continue\;
+      } 
+      \If{obj\_obtained} {
+        break\;
+      }
+      deAssign(obj, donor)\;
+      assign(obj, lightProc)\;
+    }
+  }
+ \caption{RefineLB Psuedocode}
+\end{algorithm}
+
+ As evident from the above algorithm that it tries to migrate objects based on
+ a global average which is computed as the average of each processors's load. As
+ a result it restricts the number of migration which is otherwise possible.
+ This restrictions on object migration will be more pronounced at lower power
+ caps because as the power cap decreases, the heterogeneity increases, and
+ thereby the opportunity for object migration will be high.
+
+\begin{flushleft}
+\textbf{\normalsize{GreedyLB}}
+\end{flushleft}
+
+This uses a greedy algorithm that always assigns the heaviest object to the
+least loaded processor. Following is the pseudo-algorithm:
+
+\begin{algorithm}[H]
+ \KwData{V$_t$:(the set of chare objects; \\ V$_p$ (the set of processors; \\ G$_p$ (the background load of processors) // due to non-migratable objects, etc.)}
+ \KwResult{Map:V$_t \rightarrow $ V$_p$ (An object mapping) }
+
+ // build heap of size equal to the number of objects \;
+ ObjectHeap objHeap($|$V$_t|$)\;
+ // insert each element of Vt in objHeap\;
+ V$_t\rightarrow$objHeap \; 
+ MinHeap cpuHeap(P)\;
+ //Initially processors are empty with only background load\; 
+
+ cpuHeap$\leftarrow$G$_p$\;  
+ \For{ i$\leftarrow$1 to nmigobj} {
+    o$\leftarrow$ objHeap.deleteMax()\;
+    donor$\leftarrow$cpuHeap.deleteMin()\;
+    Assign c to donor and record it in Map\;
+    donor.load += c.load // add object load of c to the donor\;
+    cpuHeap.insert(donor) \;
+    }
+ \caption{GreedyLB Psuedocode}
+\end{algorithm}
+
+The assumption while object migration is that
+the time taken by the object to execute on a processor will
+remain the same both before and after the migration.
+This assumption is valid at higher power caps because (1) all the objects are of same
+size and (2) at higher power capping values the processors are running at their optimal 
+frequency and hence the time taken by a chare to run any of them is nearly equal.
+But this assumptions fall apart at lower power caps 
+because of the heterogeneity introduced between the processors and
+ as a result it may happen that the object time will differ after the migration. 
+
+\subsection{Selection of metric ``w''} 
+We need to have a suitable metric for out parameter ``w''.
+The selected metric should demonstrate heterogeneity
+at the lower poer caps. We have considered processor idletime,
+   processor overhead and processor object time as candidates for out selection.
+   We measure these values for each processor id at a power cap of 24W.
+   Figures \ref{fig:idletime_bgtimevsproc} and \ref{fig:objtimevsproc} show 
+   the experimental plots. Using these data we concluded to chose 
+   processor's object time as the metric for ``w'' because this shows the
+   maximum variance at lower power caps.
+   
+
+\begin{figure}
+\begin{tabular}{cc}
+  \scalebox{0.45}{
+    \begin{tikzpicture}
+  \begin{axis}[
+   title = , 
+   xlabel=  Core Ids,
+   ylabel= Time (secs),
+   ymax=2, ymin=0, xmax=60, xmin=0,
+   x tick label style={black},
+   grid=both
+   ]
+  \addplot table [x=PE, y=BG]{data2.dat};
+  \addlegendentry {Overhead}
+  \end{axis}
+  \end{tikzpicture}
+  }
+& 
+  \scalebox{0.45}{
+    \begin{tikzpicture}
+  \begin{axis}[
+   title = , 
+   xlabel=  Core Ids,
+   ylabel= Time (secs),
+   ymax=42, ymin=30, xmax=60, xmin=0,
+   x tick label style={black},
+   grid=both
+   ]
+  \addplot table [x=PE, y=I]{data2.dat};
+  \addlegendentry {Idle Time}
+  \end{axis}
+  \end{tikzpicture}
+  }
+\\
+\qquad (a) & \quad (b) \\
+\end{tabular}
+\caption{Idle and Overhad time over the cores at 24W power cap}
+\label{fig:idletime_bgtimevsproc}
+\end{figure}
+
+
+
+\begin{figure}
+\centering
+  \scalebox{0.45}{
+    \begin{tikzpicture}
+    \begin{axis}[
+     title = , 
+     xlabel=  Core Ids,
+     ylabel= Time (secs),
+     ymax=58, ymin=11, xmax=60, xmin=0,
+     x tick label style={black},
+     grid=both
+     ]
+    \addplot table [x=PE, y=OBJ]{data2.dat};
+    \addlegendentry {Collective Chare Time}
+    \end{axis}
+    \end{tikzpicture}
+  }
+\caption{}
+\caption{Collective chare time on each processor at 24W power cap.}
+\label{fig:objtimevsproc}
+\end{figure}

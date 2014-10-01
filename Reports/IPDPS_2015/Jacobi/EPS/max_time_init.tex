@@ -1,0 +1,21 @@
+\documentclass{article}
+\usepackage{tikz}
+\usepackage{pgfplotstable}
+\usepackage{pgfplots}
+\begin{document}
+
+\begin{tikzpicture}
+\begin{axis}[
+ xlabel=  Power Cap Values (W),
+ ylabel = Total Execution Time (secs),
+ ymax=33, ymin=7, xmax=60, xmin=23,
+ x tick label style={black},
+ grid=both
+ ]
+\addplot table [x=POWER, y= WOLB_MAX_TIME]{data.dat};
+\addlegendentry {Without LB}
+\end{axis}
+\end{tikzpicture}
+
+ 
+\end{document}

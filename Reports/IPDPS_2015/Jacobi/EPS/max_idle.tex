@@ -1,0 +1,27 @@
+\documentclass{article}
+\usepackage{tikz}
+\usepackage{pgfplotstable}
+\usepackage{pgfplots}
+\begin{document}
+
+\begin{tikzpicture}
+\begin{axis}[
+ xlabel=  Power Cap Values (W),
+ ylabel = Max Idle Time (secs),
+ ymax=31, ymin=3, xmax=60, xmin=23,
+ x tick label style={black},
+ grid=both
+ ]
+\addplot table [x=POWER, y= PLB_MAX_IDLE]{data.dat};
+\addlegendentry {Power Aware LB}
+\addplot table [x=POWER, y= WOLB_MAX_IDLE_P]{data.dat};
+\addlegendentry {Without LB}
+\addplot table [x=POWER, y= RLB_MAX_IDLE]{data.dat};
+\addlegendentry {Refine LB}
+\addplot table [x=POWER, y= GLB_MAX_IDLE]{data.dat};
+\addlegendentry {Greedy LB}
+\end{axis}
+\end{tikzpicture}
+
+ 
+\end{document}

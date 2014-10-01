@@ -1,0 +1,281 @@
+\subsection{Heterogeneity metric}
+Our first contribution is to show that at lower power capping values, different
+nodes show prominent heterogeneity in their runtime performance.  In this work,
+      we use Intel's power\_gov library\cite{power_gov} that in turn uses RAPL
+      \cite{rapl} to cap power of memory and package\footnote{Package
+        corresponds to the processor chip that hosts processing cores, caches
+          and memory controller} subsystems.
+
+
+We define heterogeneity at a given power cap in terms of idle waiting times of
+the cores at that power cap.  We defined the idle waiting time of a core at a
+given power cap in the following two ways: 
+\\ 
+\\
+\noindent At a given power cap, let  $t_{i}, 1\leq i \leq C$  be the overall
+execution time of the core $i$ for a particular application and $T$ be the
+total execution time of the application.  
+
+\begin{description}
+  \item[Percentage Average idle waiting time, $I_{av}$] \hfill \\ 
+    \begin{equation} \label{eq:1}
+      I_{av} = \frac{\displaystyle\sum\limits_{i=0}^P (\displaystyle\max_{1\leq j \leq C} ( t_{j} ) - t_{i})}{C}
+    \end{equation}
+  \item[Percentage Max idle waiting time, $I_{m}$] \hfill \\
+    \begin{equation} \label{eq:2}
+      I_{m} = \displaystyle\max_{1\leq j \leq C} ( t_{j} ) -  \displaystyle\min_{1\leq i \leq C} ( t_{i} )
+    \end{equation}
+\end{description}
+
+Figure \ref{fig:1} shows that at lower power caps the
+idle waiting times (Equations \eqref{eq:1} and \eqref{eq:2}) are having higher values as
+compared to those at higher power caps. 
+
+\begin{figure}
+\begin{tabular}{c c}
+  \scalebox{0.45}{
+    \begin{tikzpicture}
+    \begin{axis}[
+     xlabel=  Power Cap Values (W),
+     ylabel = Average Idle Time (secs),
+     ymax=12, ymin=0, xmax=60, xmin=23,
+     x tick label style={black},
+     grid=both
+     ]
+    \addplot table [x=POWER, y= WOLB_AV_IDLE]{data.dat};
+    \addlegendentry {Without LB}
+    \end{axis}
+    \end{tikzpicture}
+  }
+& 
+  \scalebox{0.45}{
+    \begin{tikzpicture}
+    \begin{axis}[
+    xlabel=  Power Cap Values (W),
+    ylabel = Max Idle Time (secs),
+    ymax=31, ymin=6, xmax=60, xmin=23,
+    x tick label style={black},
+    grid=both
+    ]
+    \addplot table [x=POWER, y= WOLB_MAX_IDLE_P]{data.dat};
+    \addlegendentry {Without LB}
+    \end{axis}
+    \end{tikzpicture}
+  }
+\\
+\end{tabular}
+\caption{Behavior of idle waiting times at lower power caps}
+\label{fig:1}
+\end{figure}
+
+\subsection{Testbed}
+Our testbed is a 60-node Dell PowerEdge R620 cluster installed at the
+Department of Computer Science, University of Illinois at Urbana-Champaign.
+Each node is an Intel Xeon E5-2620 Sandy-bridge server with 6 physical cores @
+2GHz, 2-way SMT with 16GB of DRAM.  The Intel Sandy Bridge processor family
+supports on board power measurement and capping through the Running Average
+Power Limit (RAPL) interface \cite{rapl}.  The Sandy Bridge architecture has
+four power planes: Package (PKG), Power Plane 0 (PP0), Power Plane 1 (PP1) and
+DRAM. RAPL is implemented using a series of Machine Specifics Registers (MSRs)
+  which can be accessed to get power readings for each power plane. RAPL
+  supports power capping PKG, PP0 and DRAM power planes by writing into the
+relevant MSRs. The package power\footnote{Package corresponds to the processor
+  chip that hosts processing cores, caches and memory controller} for our
+testbed can be capped in the range 25W to 95W (71 integer power levels) while
+the memory power can be capped between 8W to 35W (28 integer power levels). The
+average base power per node for our cluster was 38 watts.  The base power was
+measured using the in-built power meters on the Power Distribution Unit (PDU)
+  that powers our cluster.  
+
+In our experiments we will \textbf{NOT} be capping the
+memory power as our work is focused on studying the heterogeneity that comes up at
+lower CPU power. The effect of lower memory power on heterogeneity is not
+discussed.
+
+
+
+\subsection{Applications used}
+We used two applications, namely, Jacobi2D \& LeanMD\cite{leanmd} from the
+Charm++ test repository.  We have manually modified these applications so that
+to get the precise timing measurements.  These applications have different CPU
+and memory usage.
+
+\begin{itemize}
+\item \textbf{Jacobi2D: } A 5-point stencil \textbf{memory-bound} application
+that computes the transmission of heat over a discretized 2D grid. The global
+2D grid is divided into smaller blocks that are processed in parallel. It is an
+iterative application where all processors synchronize at the end of each
+iteration. As is the case in a stencil computation, each grid point is the
+average of the neighboring 5 points.  For example, the new value for element X
+is the current value of X plus the current values of its left, right, top, and
+bottom neighbors.  
+
+\begin{center}       
+T    \\ L X R  \\ B    \\ 
+\end{center}
+X'  = (X + L + R + T + B) / 5.0
+
+Neighboring blocks communicate the ghost layers with each other so that
+averaging computations are done for all cells inside each block. This
+application is implemented in Charm++ using a 2D chare array.
+
+\item \textbf{LeanMD: } LeanMD \cite{leanmd} is a \textbf{computationally
+  intensive} molecular dynamics application.  This benchmark simulates atomic
+  interaction based on Lennard-Jones potential.
+
+LeanMD is a molecular dynamics simulation application written in Charm++ for
+PetaFLOPs class supercomputers. It is being developed as the next generation of
+NAMD \cite{namd}, one of the parallel
+applications winning the Gordon Bell Award in SC2002. NAMD, as a
+state-of-the-art parallel molecular dynamics application that is also written
+in Charm++, has already been proven to be able to scale to 3000 processors.
+However, it is not ready for next generation parallel machines with hundreds of
+thousands, or even millions, of processors due to the limited parallelism
+exploited in the application.  Clearly, it requires a new parallelization
+strategy that can break up the problem in a more fine-grained manner to
+effectively distribute work across the extremely large number of processors.
+With that outlook in mind, LeanMD is being developed as an experimental code.
+
+LeanMD computes the interaction forces based on Lennard-Jones forces amongst
+particles in a 3D space. It does not include any long range force calculation.
+The object decomposition is achieved using a scheme similar to NAMD. The 3D
+space is divided into hyper-rectangles, called cells or patches in NAMD’s
+nomenclature, each containing a subset of particles. A compute object is
+responsible for the force calculations between each pair of cells. In each
+computation of the application, each cell sends its particle data to all
+computes objects attached to it and receives the updates from those computes
+objects. This mini-application is implemented using Charm++ where the set of
+cells and compute objects are represented by chare arrays.
+\end{itemize}
+
+
+\subsection{charm++ \& Load Balancing used}
+For this research, we used Charm++ programming paradigm which supports dynamic
+object migration to improve performance of a parallel
+application\cite{KaleCharm}.  It relies on techniques such as processor
+virtualization and over-decomposition (having more work units than the number
+    of cores) to improve performance via adaptive overlap of computation and
+communication and data-driven execution.  Charm++ gives the freedom to the
+programmer to define program into multiple grain size objects which can be
+migrated across the cores. The programmer need not make the application core
+aware. This multiple objects defined by the programmer is moved around during
+program execution by adaptive runtime system not only for load balancing
+purposes but also for communication optimization and fault tolerance. Load
+balancer keeps the statistics of all the migratable objects for effective load
+balancing act\cite{appBalancer99}.  The runtime system provides load balancing
+strategies that can account for different application characteristics.
+Application programmers can provide their own implementation of load balancers
+based on the characteristics of the application and the ecosystem under which
+it is run.
+
+
+\subsection{Observations}
+
+\begin{figure}
+\begin{tabular}{cc}
+  \scalebox{0.45}{
+    \begin{tikzpicture}
+    \begin{axis}[
+     xlabel=  Power Cap Values (W),
+     ylabel = Total Execution Time (secs),
+     ymax=33, ymin=7, xmax=60, xmin=23,
+     x tick label style={black},
+     grid=both
+     ]
+    \addplot table [x=POWER, y= WOLB_MAX_TIME]{data.dat};
+    \addlegendentry {Without LB}
+    \end{axis}
+    \end{tikzpicture}
+  }
+& 
+  \scalebox{0.45}{
+    \begin{tikzpicture}
+    \begin{axis}[
+     xlabel=  Power Cap Values (W),
+     ylabel = Max Idle Time (secs),
+     ymax=31, ymin=6, xmax=60, xmin=23,
+     x tick label style={black},
+     grid=both
+     ]
+    \addplot table [x=POWER, y= WOLB_MAX_IDLE_P]{data.dat};
+    \addlegendentry {Without LB}
+    \end{axis}
+    \end{tikzpicture}
+  }
+\\
+\qquad (a) & \quad (b) \\
+  \scalebox{0.45}{
+    \begin{tikzpicture}
+    \begin{axis}[
+     xlabel=  Power Cap Values (W),
+     ylabel = Average Idle Time (secs),
+     ymax=12, ymin=0, xmax=60, xmin=23,
+     x tick label style={black},
+     grid=both
+     ]
+    \addplot table [x=POWER, y= WOLB_AV_IDLE]{data.dat};
+    \addlegendentry {Without LB}
+    \end{axis}
+    \end{tikzpicture}
+  }
+& 
+  \scalebox{0.45}{
+    \begin{tikzpicture}
+    \begin{axis}[
+     title = Heterogeneity between nodes at 23W , 
+     xlabel=  Core Ids,
+     ylabel= Total Execution Time (secs),
+     ymax=34, ymin=2, xmax=60, xmin=0,
+     x tick label style={black},
+     grid=both
+     ]
+    \addplot table [x=PE, y= WOLB]{data1.dat};
+    \addlegendentry {Without LB}
+    \end{axis}
+    \end{tikzpicture}
+  } \\
+\qquad (c) & \quad (d) \\
+\end{tabular}
+\caption{(a) Total Execution Time vs Power (b) Max Idle Time vs Power (c) Average Idle Time vs Power (d) Heterogeneity at 23W}
+\label{fig:init_heter}
+\end{figure}
+
+Figure\ref{fig:init_heter}(a) shows how the execution times varied under different power
+caps. For this experiment we have not used any existing load-balancers. As we
+can see, execution time of the application increases as we move from higher
+power to lower power caps. We see an exponential increase of execution time as
+we move to the lower power values. This is partly due to reduction in frequency
+as the power decreases and hence increased execution times. But we also have
+heterogeneity factor contributing to the increased execution times. We will
+next see how the heterogeneity factor contributes to this increased execution
+times.
+
+Figure\ref{fig:init_heter}(b) shows how “Max Idle Time” metric varies under
+ different power values.  As we can see under lower power regions the max idle
+ times increases exponentially. This means the difference in execution times
+ vary a lot under lower power regions. This suggests that there is a big margin
+ between the processors which finish its load quickly and the processor which
+ finished the last. In the next part let’s see how average idle times varies
+ under lower power capping regions. This metric gives a better understanding of
+ how the idle time varies across the nodes and not just the difference between
+ the best and the worst performer unlike this graph.
+
+
+similarly Figure \ref{fig:init_heter}(c) how “Average Idle Time”
+metric varies under different power values. As we can see the average idle
+varies exponentially under lower power capping regions. This shows that most or
+all processors exhibit different execution times and there by having different
+idle times and hence we see increased average idle times under lower power
+regions. This further establishes the fact that heterogeneity is present across
+the nodes and not just only with few nodes. We wanted to establish the extent
+of heterogeneity among the processors. We study that next.
+
+
+Finally Figure \ref{fig:init_heter}(d) show how the execution time has varied
+across the processors at 23W. As we can see we have huge difference in
+execution times among the processors. The difference in these execution times
+as we have seen is best captured by “max idle time” and “average idle time”
+graphs. The execution time of the processors within a node is more or less a
+constant. The execution times vary only among the PEs across the nodes. This
+shows that heterogeneity holds good across the nodes and not within the same
+node.

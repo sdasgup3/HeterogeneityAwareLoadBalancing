@@ -1,0 +1,111 @@
+\documentclass[10pt, conference, compsocconf]{IEEEtran}
+\ifCLASSINFOpdf
+  % \usepackage[pdftex]{graphicx}
+  % declare the path(s) where your graphic files are
+  % \graphicspath{{../pdf/}{../jpeg/}}
+  % and their extensions so you won't have to specify these with
+  % every instance of \includegraphics
+  % \DeclareGraphicsExtensions{.pdf,.jpeg,.png}
+\else
+  % or other class option (dvipsone, dvipdf, if not using dvips). graphicx
+  % will default to the driver specified in the system graphics.cfg if no
+  % driver is specified.
+  % \usepackage[dvips]{graphicx}
+  % declare the path(s) where your graphic files are
+  % \graphicspath{{../eps/}}
+  % and their extensions so you won't have to specify these with
+  % every instance of \includegraphics
+  % \DeclareGraphicsExtensions{.eps}
+\fi
+
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{pgfplotstable}
+\usepackage{pgfplots}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{listings}
+\usepackage{xcolor}
+\lstset{language=Python, keywordstyle=\color{blue}\bfseries, }
+\usepackage{amsmath}
+\usepackage[]{algorithm2e}
+
+\newcommand{\cmnt}[1]{}
+
+
+% correct bad hyphenation here
+\hyphenation{op-tical net-works semi-conduc-tor}
+
+
+\begin{document}
+%
+% paper title
+% can use linebreaks \\ within to get better formatting as desired
+\title{ Mitigating Impact of Heterogeneity Across Power-constrained Nodes on
+  Parallel Applications through Load Balancing}
+
+% author names and affiliations
+% use a multiple column layout for up to two different
+% affiliations
+
+\author{
+\IEEEauthorblockN{Sandeep Dasgupta}
+\IEEEauthorblockA{sdasgup3@illinois.edu}
+\and
+\IEEEauthorblockN{Karthik R. Gooli}
+\IEEEauthorblockA{gooli2@illinois.edu}
+\and
+\IEEEauthorblockN{Dhawal Seth}
+\IEEEauthorblockA{dseth3@illinois.edu}
+}
+
+\maketitle
+
+
+\begin{abstract}
+\input{abstract.tex}
+\end{abstract}
+
+\begin{IEEEkeywords}
+Energy minimization; Power capping; Load balancing
+
+\end{IEEEkeywords}
+
+
+\IEEEpeerreviewmaketitle
+
+\section{Introduction}\label{sec:intro}
+\input{intro.tex}
+
+\section{Heterogeneity Study}\label{sec:heterstudy}
+\input{heterstudy.tex}
+
+\section{Design Of Power Aware Load Balancer}\label{sec:design}
+\input{design.tex}
+%\input{work.tex}
+
+\section{Results} \label{sec:results}
+\input{result.tex}
+
+\section{Conclusions \& Future Work} \label{sec:fw}
+\input{conclusion.tex}
+
+% use section* for acknowledgement
+\section*{Acknowledgment}
+We would like to thank Prof. Josep Torrellas for helping us procure the
+resources required to establish the TestBed. The comments for the mid-term
+review was very encouraging which motivated us further. We would also like to
+thank Prof. Tarek Abdelzaher for giving us the permission for using the
+physical machines which had the capability of power capping. This project would
+not have been possible otherwise. We would like to thank the class of CS-533
+itself for providing the opportunity to pursue this project. Finally, we would
+like to thank Akhil and Osman, the PhD students of Prof. Laxmikant V. Kale, for
+sharing their knowledge and inputs throughout the course of the project.
+
+%\nocite{*}
+\bibliographystyle{siam} \bibliography{bare_conf}
+% that's all folks
+\end{document}
+
+
