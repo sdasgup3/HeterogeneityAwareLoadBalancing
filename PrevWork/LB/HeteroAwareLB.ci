@@ -1,0 +1,9 @@
+module HeteroAwareLB {
+
+extern module CentralLB;
+initnode void lbinit(void);
+group [migratable] HeteroAwareLB : CentralLB {
+  entry void HeteroAwareLB(const CkLBOptions &);  
+};
+
+};
