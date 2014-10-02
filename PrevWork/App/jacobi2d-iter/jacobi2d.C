@@ -2,7 +2,7 @@
 #include <vector>
 #include <assert.h>
 #include <sys/time.h>
-#define LDB_ITER 10
+#define LDB_ITER 20
 // See README for documentation
 
 /*readonly*/ CProxy_Main mainProxy;
@@ -147,7 +147,6 @@ public:
           CkPrintf("\n\n");
           CkPrintf("Total Program Time:%.15lf \n",  totalProgramTime);
           CkPrintf("Total Iteration Time:%.15lf \n",  totalIterTime);
-          CkPrintf("Max pe Time:%.15lf \n",  maximum);
           CkPrintf("lbd Overhead Iteration Time:%.15lf \n",  lbdOverhead);
           CkPrintf("Max idle time:%.15lf \n", maxIdleTime);
           CkPrintf("Average idle time:%.15lf\n", averageidletime);
@@ -155,8 +154,8 @@ public:
           CkPrintf("Percentage average idle time:%.15lf\n", percentageAvIdleTime);
           CkPrintf("max pe (%d): min pe (%d)\n\n\n", penum_max, penum_min); 
 
-          CkPrintf("LBD%.15lf:%.15lf:%.15lf:%.15lf:%.15lf:%.15lf:%.15lf:%.15lf\n", 
-                  totalProgramTime,totalIterTime,maximum,lbdOverhead, maxIdleTime,averageidletime, percentageIdleTime,percentageAvIdleTime   );
+          CkPrintf("%.15lf:%.15lf:%.15lf:%.15lf:%.15lf:%.15lf\n", 
+                  totalProgramTime,totalIterTime, maxIdleTime,averageidletime, percentageIdleTime,percentageAvIdleTime   );
           CkExit();        
       } else {
         CkPrintf("starting new iteration; iteration %d time: %.6lf\n", iterations, perIterTime);
@@ -166,10 +165,10 @@ public:
           totalIterTime += perIterTime;
         }
         recieve_count=0;
-        // Call begin_iteration on all worker chares in array
         perIterStartTime = CkWallTimer();
-        array.begin_iteration();
-        if(iterations == LDB_ITER) {
+        if(iterations != LDB_ITER) {
+          array.begin_iteration();
+        } else {
           CkPrintf("Before atsync\n");
           for(int i=0;i<CkNumPes();i++) {
             CkPrintf("%d\t%lf\t%d\n",i,totalTime[i], totalObjs[i]);
@@ -324,6 +323,10 @@ public:
           int currPe = CkMyPe();
           //ckout << "iter=" << itercnt << ": (" << thisIndex.x << "," << thisIndex.y << ") reporting pe " << CkMyPe() << endl;
           mainProxy.report(thisIndex.x, thisIndex.y, CkMyPe(), CmiWallTimer()-timeToCompute);
+          if (itercnt == LDB_ITER) {
+            //ckout << "iter=" << itercnt << ": AtSync reported from " << CkMyPe() << endl;
+            AtSync();
+          }
         }
     }
 

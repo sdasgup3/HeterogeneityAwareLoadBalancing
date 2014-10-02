@@ -100,8 +100,8 @@ void RefinerPower::computeAverage()
 {
   int i;
   double total = 0;
-  for (i=0; i<numComputes; i++) 
-		total += computes[i].load;
+  for (i=0; i<numComputes; i++) total += computes[i].load;
+
   averageLoad = total/P;
 }
 
