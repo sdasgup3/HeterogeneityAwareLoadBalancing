@@ -1,5 +1,12 @@
 TGT=bare_conf
-DEPS=   
+DEPS=  abstract.tex \
+       bare_conf.tex \
+       conclusion.tex \
+       design.tex  \
+       expr_setup.tex  \
+       heterstudy.tex \
+       intro.tex \
+       result.tex 
 
 LATEX=latex
 BIBTEX=bibtex

@@ -17,11 +17,11 @@ execution time of the core $i$ for a particular application and $T$ be the
 total execution time of the application.  
 
 \begin{description}
-  \item[Percentage Average idle waiting time, $I_{av}$] \hfill \\ 
+  \item[Average idle waiting time, $I_{av}$] \hfill \\ 
     \begin{equation} \label{eq:1}
       I_{av} = \frac{\displaystyle\sum\limits_{i=0}^P (\displaystyle\max_{1\leq j \leq C} ( t_{j} ) - t_{i})}{C}
     \end{equation}
-  \item[Percentage Max idle waiting time, $I_{m}$] \hfill \\
+  \item[Max idle waiting time, $I_{m}$] \hfill \\
     \begin{equation} \label{eq:2}
       I_{m} = \displaystyle\max_{1\leq j \leq C} ( t_{j} ) -  \displaystyle\min_{1\leq i \leq C} ( t_{i} )
     \end{equation}
@@ -65,12 +65,12 @@ compared to those at higher power caps.
   }
 \\
 \end{tabular}
-\caption{Behavior of idle waiting times at lower power caps}
+\caption{Behavior of idle waiting (both average and max) times at lower power caps}
 \label{fig:1}
 \end{figure}
 
 \subsection{Testbed}
-Our testbed is a 60-node Dell PowerEdge R620 cluster installed at the
+Our Testbed is a 60-node Dell PowerEdge R620 cluster installed at the
 Department of Computer Science, University of Illinois at Urbana-Champaign.
 Each node is an Intel Xeon E5-2620 Sandy-bridge server with 6 physical cores @
 2GHz, 2-way SMT with 16GB of DRAM.  The Intel Sandy Bridge processor family
@@ -82,7 +82,7 @@ DRAM. RAPL is implemented using a series of Machine Specifics Registers (MSRs)
   supports power capping PKG, PP0 and DRAM power planes by writing into the
 relevant MSRs. The package power\footnote{Package corresponds to the processor
   chip that hosts processing cores, caches and memory controller} for our
-testbed can be capped in the range 23W to 95W (73 integer power levels) while
+Testbed can be capped in the range 23W to 95W (73 integer power levels) while
 the memory power can be capped between 8W to 35W (28 integer power levels). The
 average base power per node for our cluster was 38 watts.  The base power was
 measured using the in-built power meters on the Power Distribution Unit (PDU)
@@ -97,7 +97,7 @@ discussed.
 
 \subsection{Applications used}
 We used two applications, namely, Jacobi2D \& LeanMD\cite{leanmd} from the
-Charm++ test repository.  We have manually modified these applications so that
+Charm++ test repository.  We have manually instrumented these applications so that
 we get the precise timing measurements.  These applications have different CPU
 and memory usage.
 
@@ -107,14 +107,14 @@ that computes the transmission of heat over a discretized 2D grid. The global
 2D grid is divided into smaller blocks that are processed in parallel. It is an
 iterative application where all processors synchronize at the end of each
 iteration. As is the case in a stencil computation, each grid point is the
-average of the neighboring 5 points.  For example, the new value for element X
+average of the neighboring 5 points.  For example, the new value for element X (i.e. X')
 is the current value of X plus the current values of its left, right, top, and
 bottom neighbors.  
 
 \begin{center}       
 T    \\ L X R  \\ B    \\ 
-\end{center}
 X'  = (X + L + R + T + B) / 5.0
+\end{center}
 
 Neighboring blocks communicate the ghost layers with each other so that
 averaging computations are done for all cells inside each block. This
@@ -237,19 +237,23 @@ it is run.
   } \\
 \qquad (c) & \quad (d) \\
 \end{tabular}
-\caption{(a) Total Execution Time vs Power (b) Max Idle Time vs Power (c) Average Idle Time vs Power (d) Heterogeneity at 23W}
-\label{fig:init_heter}
-\end{figure*}
+\caption{Experiment to highlight the heterogeneity involved among the nodes
+  when Jacobi2D application is run on 10 cluster nodes with different power caps
+    ranging from 20W to 60W.  (a) Total Execution Time vs Power (b) Max Idle
+    Time vs Power (c) Average Idle Time vs Power (d) Heterogeneity at Power cap
+    of 23W} \label{fig:init_heter} \end{figure*}
 
-Figure\ref{fig:init_heter}(a) shows how the execution times varied under different power
-caps. For this experiment we have not used any existing load-balancers. As we
-can see, execution time of the application increases as we move from higher
-power to lower power caps. We see an exponential increase of execution time as
-we move to the lower power values. This is partly due to reduction in frequency
-as the power decreases and hence increased execution times. But we also have
-heterogeneity factor contributing to the increased execution times. We will
-next see how the heterogeneity factor contributes to this increased execution
-times.
+The following observations are made on the execution times of Jacobi2D application
+run on 10 cluster nodes ( of the aforementioned cluster) under different power caps ranging from 
+20W to 60W. For this particular experiment we have not turned on any load balancer.
+
+Figure\ref{fig:init_heter}(a) shows how the execution times varied under
+different power caps.  As we can see, execution time of the application
+increases as we move from higher power to lower power caps. We see an
+exponential increase of execution time as we move to the lower power values.
+This is partly due to reduction in frequency as the power power level goes down
+and hence increased execution times. But we also have heterogeneity factor
+contributing to the increased execution times which will explore next. 
 
 Figure\ref{fig:init_heter}(b) shows how “Max Idle Time” metric varies under
  different power values.  As we can see under lower power regions the max idle
@@ -268,12 +272,12 @@ under lower power capping regions. This shows that most or all processors
 exhibit different execution times and there by having different idle times and
 hence we see increased average idle times under lower power regions. This
 further establishes the fact that heterogeneity is present across the nodes and
-not just only with few nodes. We wanted to establish the extent of
-heterogeneity among the processors. We study that next.
+not just only with few nodes. Next we will show the extent of
+heterogeneity among the processors. 
 
 
 Figure \ref{fig:init_heter}(d) show how the execution time has varied
-across the processors at 23W. As we can see we have huge difference in
+across the processors at 23W. As we see we have huge difference in
 execution times among the processors. The difference in these execution times
 as we have seen is best captured by “max idle time” and “average idle time”
 graphs. The execution time of the processors within a node is more or less a
