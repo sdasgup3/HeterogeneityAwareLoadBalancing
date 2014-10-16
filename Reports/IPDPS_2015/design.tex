@@ -1,27 +1,27 @@
 Our second contribution is to minimize the above heterogeneity using the
-Charm++ load balancers.  We first observed the working of existing load
+Charm++ load balancing strategies.  We first observed the working of existing load
 balancers like \emph{RefineLB} \& \emph{GreedyLB} to evaluate the its effect in
 minimizing the heterogeneity. 
  
-\subsection{Existing Load-balancers} Load balancing is a technique of
-distributing computational and communication load evenly across processors of a
-parallel machine so that no single processor is overloaded.  Charm++ implements
-a generic, measurement-based load balancing framework which automatically
-instruments all Charm++ objects, collects computation load and communication
-structure during execution and stores them into a load balancing database.
-Charm++ then provides a collection of load balancing strategies whose job it is
-to decide on a new mapping of objects to processors based on the information
-from the database.  These strategies work under the assumption that objects in
-a Charm++ application tend to exhibit temporal correlation in their computation
-and communication patterns, i.e. future can be predicted to some extent using
-the collected data, allowing effective measurement-based load balancing without
-application-specific knowledge. Following are the two widely used load
-balancing strategies:
+\subsection{Existing Load-balancers} 
+Load balancing is a technique of distributing computational and communication
+load evenly across processors of a parallel machine so that no single processor
+is overloaded.  Charm++ implements a generic, measurement-based load balancing
+framework which automatically instruments all Charm++ objects, collects
+computation load and communication structure during execution and stores them
+into a load balancing database.  Charm++ then provides a collection of load
+balancing strategies whose job it is to decide on a new mapping of objects to
+processors based on the information from the database.  These strategies work
+under the assumption that objects in a Charm++ application tend to exhibit
+temporal correlation in their computation and communication patterns, i.e.
+future can be predicted to some extent using the collected data, allowing
+effective measurement-based load balancing without application-specific
+knowledge. Following are the two widely used load balancing strategies:
 
 \subsubsection{RefineLB}
 The objective of this strategy is to move objects away from the most overloaded
-processors to reach an average. Following is the pseudo-algorithm of this
-strategy:
+processors to less overloaded ones so as to reach an average load on each
+processors. Algorithm~\ref{alg:refine} shows the pseudo-code for this strategy:
 
 \begin{algorithm}
  \KwData{V$_t$:(the set of objects; V$_p$ (the set of processors)}
@@ -44,17 +44,18 @@ strategy:
     }
   }
  \caption{RefineLB Pseudocode}
+ \label{alg:refine}
 \end{algorithm}
 
  As evident from the above algorithm that it tries to migrate objects based on
- a global average which is computed as the average of each processors's load. As
- a result it restricts the number of migration which is otherwise possible.
- This restriction on object migration will be more pronounced at lower power
- caps as the opportunity for object migration is high at lower power caps due 
- to the increased heterogeneity.
+ a global average which is computed as the average of each processor's load.
+ As a result it restricts the number of migration which is otherwise possible.
+ At lower power cap  the opportunity for objects migration will be more due to
+ increased heterogeneity.  But this strategy being dependent on a global metric
+ which may not change much at lower power caps.
 
 \subsubsection{GreedyLB}
-This uses a greedy algorithm that always assigns the heaviest object to the
+This uses a greedy algorithm that always assigns the heaviest object (load-wise) to the
 least loaded processor. 
 
 \begin{algorithm}
@@ -77,44 +78,47 @@ least loaded processor.
     cpuHeap.insert(donor) \;
     }
  \caption{GreedyLB Pseudocode}
+ \label{alg:greedy}
 \end{algorithm}
 
-The assumption for object migration is that
-the time taken by the object to execute on a processor will
-remain the same both before and after the migration.
-This assumption is valid at higher power caps because (1) all the objects are of same
-size and (2) at higher power capping values the processors are running at nearly the same 
-frequencies and hence the time taken by a chare to run any of them is nearly equal.
-But this assumptions fall apart at lower power caps 
-because of the heterogeneity introduced between the processors and
- as a result it may happen that the object time will differ after the migration. Following is the pseudo-algorithm:
+The assumption for object migration is that the time taken by the object to
+execute on a processor will remain the same both before and after the
+migration.  This assumption is valid at higher power caps because (1) all the
+objects are of same size and (2) at higher power capping values the processors
+are running at nearly the same frequencies and hence the time taken by a chare
+to run any of them is nearly equal.  But this assumptions fall apart at lower
+power caps because of the heterogeneity introduced between the processors and
+as a result it may happen that the object time will differ after the migration.
+Algorithm~\ref{alg:greedy} shows the corresponding pseudo-code.
 
 \subsection{Design: Power Aware Load Balancer}
 We have established the fact that current load-balancers in charm++ are not
-power aware. Current Load Balancers do not load balance based on the
-individual capacity of the processor. We have also established that there is a
-definite scope for improvement in execution time of the application by
-minimizing the maximum idle and the average idle times of the processor.
+power aware. Current Load Balancers do not load balance based on the individual
+performance of the processor at lower power caps. We have also established that
+there is a definite scope for improvement in execution time of the application
+by minimizing the maximum idle and the average idle times of the processor.
 Our motive behind the design was to make all the processors finish the
 execution at the same point of time. This approach takes relative speeds of the
-processors into consideration for balancing the load. We use the object times
-of the chares to measure the relative speeds of the processors. We explain in
-the next section, the reason to choose object time for the load balancing.  In
-this approach we try to average out the execution time by assigning the load in
-such a way that each of them is assigned exactly that much amount of load which
-helps all the PEs finish at the same time. As it can be seen in the
-Figure \ref{fig:ideal} different PEs finish execution at different points of time. As per the
-motive of the design we make all the processors to finish at the same time. The
-following two equations explains our design.  
+processors into consideration for balancing the load. We use the object time of
+the chares, which is defined as the time taken by the chare to run on a
+particular processor, to measure the relative speeds of the processors. We
+explain in the next section, the reason to choose object time for the load
+balancing.  In this approach we try to average out the execution time by
+assigning the load in such a way that each of them is assigned exactly that
+much amount of load which helps all the PEs finish at almost the same time. 
+%As it can be seen in the Figure \ref{fig:ideal} different PEs finish execution
+%at different points of time. As per the motive of the design we make all the
+%processors to finish at the same time. 
+The following two equations explains our design.  
 
-\begin{figure}
-\centering
-\scalebox{.40} {
-\includegraphics[scale=0.8]{Jacobi/EPS/time_diff.eps}
-}
-\caption{Expected Result of Power Aware Load Balancer}
-\label{fig:ideal}
-\end{figure}
+%\begin{figure}
+%\centering
+%\scalebox{.40} {
+%\includegraphics[scale=0.8]{Jacobi/EPS/time_diff.eps}
+%}
+%\caption{Expected Result of Power Aware Load Balancer}
+%\label{fig:ideal}
+%\end{figure}
 
     \begin{equation} \label{eq:3}
       (w_1x_1) = (w_2x_2) = (w_3x_3) = \dots = (w_nx_n) 
@@ -203,7 +207,7 @@ time\footnote{Object time is the time taken by a charm++ object to run on a
 \\
 \qquad (a) & \quad (b) \\
 \end{tabular}
-\caption{Idle and Overhad time over the cores at 24W power cap}
+\caption{Idle and Overhead time over the cores at 24W power cap}
 \label{fig:idletime_bgtimevsproc}
 \end{figure}
 
