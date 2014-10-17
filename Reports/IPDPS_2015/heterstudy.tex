@@ -95,11 +95,15 @@ discussed.
 
 
 
-\subsection{Applications used}
-We used two applications, namely, Jacobi2D \& LeanMD\cite{leanmd} from the
-Charm++ test repository.  We have manually instrumented these applications so that
-we get the precise timing measurements.  These applications have different CPU
-and memory usage.
+\subsection{Application used}
+%We used two applications, namely, Jacobi2D \& LeanMD\cite{leanmd} from the
+We used an application, namely, Jacobi2D  from the
+%Charm++ test repository.  We have manually instrumented these applications so that
+%we get the precise timing measurements.  These applications have different CPU
+Charm++ test repository.  We have manually instrumented this applications so that
+we get the precise timing measurements.  
+%These application has different CPU
+%and memory usage.
 
 \begin{itemize}
 \item \textbf{Jacobi2D: } A 5-point stencil \textbf{memory-bound} application
@@ -120,6 +124,7 @@ Neighboring blocks communicate the ghost layers with each other so that
 averaging computations are done for all cells inside each block. This
 application is implemented in Charm++ using a 2D chare array.
 
+\cmnt{
 \item \textbf{LeanMD: } LeanMD \cite{leanmd} is a \textbf{computationally
   intensive} molecular dynamics application.  This benchmark simulates atomic
   interaction based on Lennard-Jones potential.
@@ -147,6 +152,7 @@ computation of the application, each cell sends its particle data to all
 computes objects attached to it and receives the updates from those computes
 objects. This mini-application is implemented using Charm++ where the set of
 cells and compute objects are represented by chare arrays.
+}
 \end{itemize}
 
 

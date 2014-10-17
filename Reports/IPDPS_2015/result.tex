@@ -9,11 +9,12 @@ the following parameters:
 \item Number of Iterations        = $20$
 \end{enumerate}
 
-\subsection{Performance Evaluation Of Power Aware Load Balancer}
-We run Charm++ applications (1) without load balancing (2) with existing load
-balancing strategies (like  RefineLB and GreedyLB) and (3) with our Power Aware
-strategy and the results are compared based on the the metrics of
+\subsection{Performance Evaluation Of Power Aware Load Balancer} We run Charm++
+  applications (1) without load balancing (2) with existing load balancing
+  strategies (like  RefineLB and GreedyLB) and (3) with our Power Aware
+  strategy and the results are compared based on the the metrics of
 heterogeneity, i.e. Equations \eqref{eq:1} and \eqref{eq:2}.  Power aware LB
+(LB is used as a short form of load balancing)
 has proved to be more efficient than other LBs. The main reason is the
 frequency awareness our load balancer takes into account while trying to
 minimize the load among the processors whereas RefineLB and GreedyLB are not aware of the
@@ -53,23 +54,25 @@ differences in frequency that exists at lower power caps.
 \label{fig:final_exec_time_vs_power}
 \end{figure}
 %
-As shown in Figure \ref{tb:1} a maximum speedup of 1.3$\times$ was seen when compared
+As shown in Table \ref{tb:1} a maximum speedup of 1.3$\times$ was seen when compared
 to GreedyLB. Maximum speedup of 1.2$\times$ w.r.t to RefineLB and 1.28$\times$ w.r.t without LB.
 The total execution time when run without any load balancer at 23W power cap is
 ~34sec.  This is somewhat reduced in case of RefineLB and GreedyLB. But the
-power aware LB is able to decrease is to ~25sec as shown in figure
-%\ref{fig:final_exec_time_vs_power}. The percentage decrease with the Power
-Aware LB is more.
+power aware LB is able to decrease is to ~25sec as shown in figure \ref{fig:final_exec_time_vs_power}. 
 
-\begin{figure}[htbp]
-  \begin{center}
-  \scalebox{.75} {
-     \includegraphics[scale=0.8]{Jacobi/EPS/t2.eps} 
-  }
-     \end{center}
-  \caption{Speedups}
-  \label{tb:1}
-\end{figure}
+\begin{table}[h]
+\begin{tabular}{|c|c|c|c|}
+\hline
+Power & Without LB & With Refine LB & With Greedy LB \\ \hline
+27 & 1.04 & 1.08 & 1.08 \\ \hline
+26 & 1.10 & 1.11 & 1.13 \\ \hline
+25 & 1.18 & 1.18 & 1.17 \\ \hline
+24 & 1.16 & 1.18 & 1.19 \\ \hline
+23 & 1.28 & 1.20 & 1.30 \\ \hline
+\end{tabular}
+\caption{Speedups}
+\label{tb:1}
+\end{table}
 
 There is little or no speed up in cases of higher power caps when using the
 power aware load balancer. The reason behind this is the absence of
@@ -77,16 +80,7 @@ heterogeneity at higher power caps. The product of object wall time ‘w’ and 
 workload ‘x’ comes to be almost the same, and so it leaves power aware LB no
 scope of further balancing the workload based on frequency. Load imbalance is
 observed only at lower power caps. Hence, there is very little migration that
-power aware load balancer does at higher power caps. This makes GreedyLB
-perform better at higher power caps, as it takes the greedy approach of freshly
-loading the heaviest object with lightest loaded processor. 
-
-GreedyLB and RefineLB are unaware of the differences in frequencies of
-different nodes that exist at lower power caps. There is equal weightage given
-to each node in GreedyLB and RefineLB. These do not take into account the
-frequency of each node and assume that all the nodes in the cluster have
-identical performance capability.
-
+power aware load balancer does at higher power caps. 
 
 \begin{figure}
 \centering
@@ -143,7 +137,7 @@ identical performance capability.
 
 Performance of power aware LB is further analyzed with respect to other LBs in
 terms of heterogeneity metrics – average idle time and max idle time, as shown
-in Figure \ref{tb:2}. Power aware LB has out performed the other existing power
+in Table \ref{tb:2}. Power aware LB has out performed the other existing power
 unaware LBs in terms of average and max idle times. The average idle time is
 reduced using the power aware LB by as high as 60\% when compared to the
 average idle time of the run without any LB. If compared with RefineLB and
@@ -152,15 +146,22 @@ idle time at 23W comes to be ~12,10,14 and 5sec for runs without LB, with
 Refine, Greedy and power aware LBs respectively as shown in figure
 \ref{fig:avg_times_final_vs_power}.
 
-\begin{figure}
-  \begin{center}
-  \scalebox{0.5} {
-     \includegraphics[scale=0.8]{Jacobi/EPS/t1.eps} 
-  }
-     \end{center}
-  \caption{\% Reduction in Idle times}
-  \label{tb:2}
-\end{figure}
+\begin{table}[h]
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+ & \multicolumn{3}{c|}{\% Average Idle Time Reduction} & \multicolumn{3}{c|}{\% Max Idle Time Reduction} \\ \hline
+Power & WOLB\footnote{Without LB} & RLB\footnote{With  Refine LB} & GLB\footnote{With Greedy LB} & WOLB & RLB & GLB \\ \hline
+27 & 21.16 & 28.78 & 39.05 & 14.87 & 14.85 & -3.76 \\ \hline
+26 & 44.58 & 37.21 & 46.11 & 18.27 & 16.57 & 1.005 \\ \hline
+25 & 60.86 & 54.16 & 59.05 & 22.55 & 21.61 & 1.78 \\ \hline
+24 & 54.81 & 48.43 & 58.77 & 19.17 & 20.58 & 7.79 \\ \hline
+23 & 54.48 & 44.46 & 63.05 & 25.63 & 21.36 & 17.87 \\ \hline
+\end{tabular}
+\caption{\% Reduction in Idle times}
+\label{tb:2}
+\end{table}
+
+
 
 The reduction in maximum idle time is as high as 25\% in the presence of power
 aware LB. It is ~30sec in the absence of any load balancer and it comes down to
@@ -174,10 +175,7 @@ one off node doesn’t pull the average down to a great extent unlike the max
 idle time metric.
 
 Power aware LB performs equally well in cases of higher power caps when there
-is little or no heterogeneity among the nodes. One positive aspect here is that
-power aware load balancer does not try to do unnecessary balancing at higher
-power caps that could have led to an increase in the average or max idle
-leading to an increase in the total execution time.
+is little or no heterogeneity among the nodes. 
 
 \begin{figure}
 \centering

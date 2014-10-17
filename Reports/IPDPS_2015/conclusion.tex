@@ -17,13 +17,13 @@ balancer that helps in minimizing the heterogeneity. Our load balancer
 performed better than the existing power-unaware load balancers in the Charm++
 framework. It helped reduced the existing amount of heterogeneity and achieve a
 maximum speed up of 1.3x with respect to other load balancers when used with
-Jacobi2d application. 
+Jacobi2D application. 
 
 
 The current limitation with this load balancer is that it does not take into
 account the size of the workload on a particular node. This limits its usage in
 the applications where the object size varies with time. One such applications
-that we studied for heterogeneity at lower power regions was LeanMD, where
+that we studied for heterogeneity at lower power regions was LeanMD\cite{leanmd}, where
 there is particle migration happening as the application executes leading to
 different object sizes at different times. 
 
