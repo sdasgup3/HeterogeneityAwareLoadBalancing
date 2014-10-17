@@ -1,6 +1,6 @@
-We used the existing charm++ implementation of Jacobi and executed the
+We used the existing Charm++ implementation of Jacobi2D and executed the
 application at different power caps ranging from $23$ to $60 W$.  Each
-execution of the Jacobi application (at a particular power cap) is done with
+execution of the Jacobi2D application (at a particular power cap) is done with
 the following parameters:
 
 \begin{enumerate}
@@ -9,22 +9,23 @@ the following parameters:
 \item Number of Iterations        = $20$
 \end{enumerate}
 
-\subsection{Performance Evaluation Of Power Aware Load Balancers}
-To analyze the performance of our power-aware load balancer, the metrics of
-heterogeneity are compared. This comparison is done with the performance of
-Jacobi2d execution in the absence and presence of existing load balancers
-like RefineLB and GreedyLB. Power aware LB has proved to be more efficient
-than other LBs. The main reason is the frequency awareness our load balancer
-takes into account while trying to minimize the load among the nodes.
-RefineLB and GreedyLB are not aware of the differences in frequency that
-exists at lower power caps. This makes them power unaware. They only consider
-the workload in terms of object wall time while balancing the load and try to
-converge to that point without taking into the account individual capacity of
-the processor. When migrating Chare objects from one node to other, our load
-balancer works takes in to account the existing workload and the time taken
-to complete the execution for that amount of workload, at both sending and
-receiving ends. This makes it perform well even in the presence of
-heterogeneity at lower power caps.
+\subsection{Performance Evaluation Of Power Aware Load Balancer}
+We run Charm++ applications (1) without load balancing (2) with existing load
+balancing strategies (like  RefineLB and GreedyLB) and (3) with our Power Aware
+strategy and the results are compared based on the the metrics of
+heterogeneity, i.e. Equations \eqref{eq:1} and \eqref{eq:2}.  Power aware LB
+has proved to be more efficient than other LBs. The main reason is the
+frequency awareness our load balancer takes into account while trying to
+minimize the load among the processors whereas RefineLB and GreedyLB are not aware of the
+differences in frequency that exists at lower power caps. 
+%This makes them power unaware. 
+%They only consider the workload in terms of object wall time while
+%balancing the load and try to converge to that point without taking into the
+%account individual capacity of the processor. When migrating Chare objects from
+%one node to other, our load balancer takes into account the existing
+%workload and the time taken to complete the execution for that amount of
+%workload, at both sending and receiving ends. This makes it perform well even
+%in the presence of heterogeneity at lower power caps.
 
 \begin{figure}
 \centering
@@ -51,13 +52,13 @@ heterogeneity at lower power caps.
 \caption{Total Execution Time Vs Power Comparison between LBs} 
 \label{fig:final_exec_time_vs_power}
 \end{figure}
-
+%
 As shown in Figure \ref{tb:1} a maximum speedup of 1.3$\times$ was seen when compared
 to GreedyLB. Maximum speedup of 1.2$\times$ w.r.t to RefineLB and 1.28$\times$ w.r.t without LB.
 The total execution time when run without any load balancer at 23W power cap is
 ~34sec.  This is somewhat reduced in case of RefineLB and GreedyLB. But the
 power aware LB is able to decrease is to ~25sec as shown in figure
-\ref{fig:final_exec_time_vs_power}. The percentage decrease with the Power
+%\ref{fig:final_exec_time_vs_power}. The percentage decrease with the Power
 Aware LB is more.
 
 \begin{figure}[htbp]
