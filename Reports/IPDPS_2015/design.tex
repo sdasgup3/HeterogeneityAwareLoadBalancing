@@ -26,9 +26,9 @@ processors. Algorithm~\ref{alg:refine} shows the pseudo-code for this strategy:
 \begin{algorithm}
  \KwData{V$_t$:(the set of objects; V$_p$ (the set of processors)}
  \KwResult{Map:V$_t \rightarrow $ V$_p$ (An object mapping) }
- // build heap \;
+  // build a heap of heavily loaded processors and a set of lightly loaded ones\;
   ProcessorHeap heavyProcs(V$_p$)\;
-  Set *lightProcs\;
+  Set lightProcs(V$_p$)\; 
   \While{!done} {
     donor =   heavyProcessors$\rightarrow$deleteMax()\;
     \While{ligthProcs} {
@@ -49,10 +49,10 @@ processors. Algorithm~\ref{alg:refine} shows the pseudo-code for this strategy:
 
  As evident from the above algorithm that it tries to migrate objects based on
  a global average which is computed as the average of each processor's load.
- As a result it restricts the number of migration which is otherwise possible.
+ As a result it restricts the number of migrations which is otherwise possible.
  At lower power cap  the opportunity for objects migration will be more due to
  increased heterogeneity.  But this strategy being dependent on a global metric
- which may not change much at lower power caps.
+ which may stay nearly the same as we go towards the lower power region.
 
 \subsubsection{GreedyLB}
 This uses a greedy algorithm that always assigns the heaviest object (load-wise) to the
@@ -62,15 +62,15 @@ least loaded processor.
  \KwData{V$_t$:(the set of chare objects; \\ V$_p$ (the set of processors; \\ G$_p$ (the background load of processors) // due to non-migratable objects, etc.)}
  \KwResult{Map:V$_t \rightarrow $ V$_p$ (An object mapping) }
 
- // build heap of size equal to the number of objects \;
- ObjectHeap objHeap($|$V$_t|$)\;
- // insert each element of Vt in objHeap\;
- V$_t\rightarrow$objHeap \; 
- MinHeap cpuHeap(P)\;
- //Initially processors are empty with only background load\; 
+ // Build a max heap of V$_t$ \;
+ MaxHeap objHeap($|$V$_t|$)\;
+ objHeap$\leftarrow$V$_t$ \; 
 
+ // Build min heap of G$_p$\;
+ MinHeap cpuHeap($|$V$_p|$)\;
  cpuHeap$\leftarrow$G$_p$\;  
- \For{ i$\leftarrow$1 to nmigobj} {
+
+ \For{ i$\leftarrow$1 to $|objHeap|$} {
     o$\leftarrow$ objHeap.deleteMax()\;
     donor$\leftarrow$cpuHeap.deleteMin()\;
     Assign c to donor and record it in Map\;

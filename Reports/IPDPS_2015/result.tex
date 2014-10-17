@@ -177,13 +177,14 @@ Power(W) & $R^{av}_{wolb}$ & $R^{av}_{rlb}$ & $R^{av}_{glb}$ & $R^{m}_{wolb}$ & 
 The reduction in maximum idle time is as high as 25\% in the presence of power
 aware LB. It is ~30sec in the absence of any load balancer and it comes down to
 ~23sec when run with power aware LB at a low power cap of 23W as shown in
-figure \ref{fig:idle_times_final_vs_power}. We could have further decreased
-the maximum idle time. But due to an off node in the cluster with an unexpected
-behavior led to an increased max idle time. However average idle time is a
-better metric to measure the performance of our load balancer than the max idle
-time since it’s taking average idle time into account and the misbehavior by a
-one off node doesn’t pull the average down to a great extent unlike the max
-idle time metric.
+figure \ref{fig:idle_times_final_vs_power}. 
+%We could have further decreased
+%the maximum idle time. But due to an off node in the cluster with an unexpected
+%behavior led to an increased max idle time. 
+We may consider average idle time as a better metric to measure the performance
+of our load balancer than the max idle time since it’s taking average idle time
+into account and the misbehavior by a one off node doesn’t pull the average
+down to a great extent unlike it mnay happen with the max idle time metric.
 
 Power aware LB performs equally well in cases of higher power caps when there
 is little or no heterogeneity among the nodes. 

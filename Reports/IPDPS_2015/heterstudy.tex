@@ -100,7 +100,7 @@ discussed.
 We used an application, namely, Jacobi2D  from the
 %Charm++ test repository.  We have manually instrumented these applications so that
 %we get the precise timing measurements.  These applications have different CPU
-Charm++ test repository.  We have manually instrumented this applications so that
+Charm++ test repository.  We have manually instrumented this application so that
 we get the precise timing measurements.  
 %These application has different CPU
 %and memory usage.
@@ -259,7 +259,8 @@ increases as we move from higher power to lower power caps. We see an
 exponential increase of execution time as we move to the lower power values.
 This is partly due to reduction in frequency as the power power level goes down
 and hence increased execution times. But we also have heterogeneity factor
-contributing to the increased execution times which will explore next. 
+contributing to the increased execution times which will be discussed in the
+further sections.
 
 Figure\ref{fig:init_heter}(b) shows how “Max Idle Time” metric varies under
  different power values.  As we can see under lower power regions the max idle
@@ -282,7 +283,7 @@ not just only with few nodes. Next we will show the extent of
 heterogeneity among the processors. 
 
 
-Figure \ref{fig:init_heter}(d) show how the execution time has varied
+Figure \ref{fig:init_heter}(d) shows how the execution time has varied
 across the processors at 23W. As we see we have huge difference in
 execution times among the processors. The difference in these execution times
 as we have seen is best captured by “max idle time” and “average idle time”
