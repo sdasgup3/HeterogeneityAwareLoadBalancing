@@ -181,10 +181,10 @@ figure \ref{fig:idle_times_final_vs_power}.
 %We could have further decreased
 %the maximum idle time. But due to an off node in the cluster with an unexpected
 %behavior led to an increased max idle time. 
-We may consider average idle time as a better metric to measure the performance
-of our load balancer than the max idle time since it’s taking average idle time
-into account and the misbehavior by a one off node does not pull the average
-down to a great extent unlike the max idle time metric.
+We considered average idle time as a better metric to measure the performance
+of our load balancer than the max idle time since it is taking average of the
+idle times. Misbehavior by one node does not pull the average down unlike the
+max idle time metric.
 
 Power aware LB performs equally well in cases of higher power caps when there
 is little or no heterogeneity among the nodes. 

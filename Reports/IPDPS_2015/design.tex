@@ -1,8 +1,8 @@
 Our second contribution is to minimize the above heterogeneity using the
 Charm++ load balancing strategies.  We first observed the working of existing load
-balancers like \emph{RefineLB} \& \emph{GreedyLB} to evaluate the its effect in
-minimizing the heterogeneity. 
- 
+balancers like \emph{RefineLB} \& \emph{GreedyLB} to 
+understand their efficiency under lower power caps.
+
 \subsection{Existing Load-balancers} 
 Load balancing is a technique of distributing computational and communication
 load evenly across processors of a parallel machine so that no single processor
@@ -10,7 +10,7 @@ is overloaded.  Charm++ implements a generic, measurement-based load balancing
 framework which automatically instruments all Charm++ objects, collects
 computation load and communication structure during execution and stores them
 into a load balancing database.  Charm++ then provides a collection of load
-balancing strategies whose job it is to decide on a new mapping of objects to
+balancing strategies whose job is to decide on a new mapping of objects to
 processors based on the information from the database.  These strategies work
 under the assumption that objects in a Charm++ application tend to exhibit
 temporal correlation in their computation and communication patterns, i.e.
@@ -86,10 +86,11 @@ execute on a processor will remain the same both before and after the
 migration.  This assumption is valid at higher power caps because (1) all the
 objects are of same size and (2) at higher power capping values the processors
 are running at nearly the same frequencies and hence the time taken by a chare
-to run any of them is nearly equal.  But this assumptions fall apart at lower
+to run any of them is nearly equal.  But these assumptions fall apart at lower
 power caps because of the heterogeneity introduced between the processors and
-as a result it may happen that the object time will differ after the migration.
-Algorithm~\ref{alg:greedy} shows the corresponding pseudo-code.
+as a result it may so happen that the object time would be 
+significantly different after the migration.  Algorithm~\ref{alg:greedy} shows
+the corresponding pseudo-code.
 
 \subsection{Design: Power Aware Load Balancer}
 We have established the fact that current load-balancers in charm++ are not
