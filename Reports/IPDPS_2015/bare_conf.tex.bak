@@ -56,8 +56,11 @@
 \IEEEauthorblockN{Karthik R. Gooli}
 \IEEEauthorblockA{gooli2@illinois.edu}
 \and
-\IEEEauthorblockN{Dhawal Seth}
-\IEEEauthorblockA{dseth3@illinois.edu}
+\IEEEauthorblockN{Osman Sarood}
+\IEEEauthorblockA{osmansarood@gmail.com}
+\and
+\IEEEauthorblockN{Akhil Langer}
+\IEEEauthorblockA{alanger@illinois.edu}
 }
 
 \maketitle
@@ -68,7 +71,7 @@
 \end{abstract}
 
 \begin{IEEEkeywords}
-Energy minimization; Power capping; Load balancing
+Energy minimization; Power capping; Load balancing; Charm++; Cluster Computing
 
 \end{IEEEkeywords}
 
@@ -94,14 +97,12 @@ Energy minimization; Power capping; Load balancing
 % use section* for acknowledgement
 \section*{Acknowledgment}
 We would like to thank Prof. Josep Torrellas for helping us procure the
-resources required to establish the TestBed. The comments for the mid-term
-review was very encouraging which motivated us further. We would also like to
-thank Prof. Tarek Abdelzaher for giving us the permission for using the
+resources required to establish the TestBed. 
+We would also like to thank Prof. Tarek Abdelzaher for giving us the permission for using the
 physical machines which had the capability of power capping. This project would
-not have been possible otherwise. We would like to thank the class of CS-533
-itself for providing the opportunity to pursue this project. Finally, we would
-like to thank Akhil and Osman, the PhD students of Prof. Laxmikant V. Kale, for
-sharing their knowledge and inputs throughout the course of the project.
+not have been possible otherwise. 
+%Finally, we would like to thank Akhil and Osman, the PhD students of Prof. Laxmikant V. Kale, for
+%sharing their knowledge and inputs throughout the course of the project.
 
 %\nocite{*}
 \bibliographystyle{siam} \bibliography{bare_conf}

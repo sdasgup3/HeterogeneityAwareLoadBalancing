@@ -74,7 +74,7 @@ Power (W) & S$_{Without LB}$ & S$_{With Refine LB}$ & S$_{With Greedy LB}$ \\ \h
 24 & 1.16 & 1.18 & 1.19 \\ \hline
 23 & 1.28 & 1.20 & 1.30 \\ \hline
 \end{tabular}
-\caption{Speedup, S$_x$ = (Application run time with Power Aware LB) / (Application run time with LB startegy x) }
+\caption{Speedup, S$_x$ = (Application run time with Power Aware LB) / (Application run time with LB strategy x) }
 \label{tb:1}
 \end{table}
 
@@ -150,7 +150,7 @@ percentage reduction in Max Idle time, $R^{m}$ as follows:
 \end{aligned}
     \end{equation}
 Its evident that Power aware LB has out performed the other existing power
-unaware LBs in terms of average and max idle times at lowe power caps. The average idle time is
+unaware LBs in terms of average and max idle times at lower power caps. The average idle time is
 reduced using the power aware LB by as high as 60\% when compared to the
 average idle time of the run without any LB. If compared with RefineLB and
 GreedyLB, the reduction is as high as 54\% and 63\% respectively. The average
@@ -183,8 +183,8 @@ figure \ref{fig:idle_times_final_vs_power}.
 %behavior led to an increased max idle time. 
 We may consider average idle time as a better metric to measure the performance
 of our load balancer than the max idle time since it’s taking average idle time
-into account and the misbehavior by a one off node doesn’t pull the average
-down to a great extent unlike it mnay happen with the max idle time metric.
+into account and the misbehavior by a one off node does not pull the average
+down to a great extent unlike the max idle time metric.
 
 Power aware LB performs equally well in cases of higher power caps when there
 is little or no heterogeneity among the nodes. 

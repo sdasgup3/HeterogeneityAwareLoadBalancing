@@ -26,9 +26,9 @@ processors. Algorithm~\ref{alg:refine} shows the pseudo-code for this strategy:
 \begin{algorithm}
  \KwData{V$_t$:(the set of objects; V$_p$ (the set of processors)}
  \KwResult{Map:V$_t \rightarrow $ V$_p$ (An object mapping) }
- // build heap \;
+  // build a heap of heavily loaded processors and a set of lightly loaded ones\;
   ProcessorHeap heavyProcs(V$_p$)\;
-  Set *lightProcs\;
+  Set lightProcs(V$_p$)\; 
   \While{!done} {
     donor =   heavyProcessors$\rightarrow$deleteMax()\;
     \While{ligthProcs} {
@@ -48,11 +48,11 @@ processors. Algorithm~\ref{alg:refine} shows the pseudo-code for this strategy:
 \end{algorithm}
 
  As evident from the above algorithm that it tries to migrate objects based on
- a global average which is computed as the average of each processors's load.
- As a result it restricts the number of migration which is otherwise possible.
+ a global average which is computed as the average of each processor's load.
+ As a result it restricts the number of migrations which is otherwise possible.
  At lower power cap  the opportunity for objects migration will be more due to
  increased heterogeneity.  But this strategy being dependent on a global metric
- which may not change much at lower power caps.
+ which may stay nearly the same as we go towards the lower power region.
 
 \subsubsection{GreedyLB}
 This uses a greedy algorithm that always assigns the heaviest object (load-wise) to the
@@ -62,15 +62,15 @@ least loaded processor.
  \KwData{V$_t$:(the set of chare objects; \\ V$_p$ (the set of processors; \\ G$_p$ (the background load of processors) // due to non-migratable objects, etc.)}
  \KwResult{Map:V$_t \rightarrow $ V$_p$ (An object mapping) }
 
- // build heap of size equal to the number of objects \;
- ObjectHeap objHeap($|$V$_t|$)\;
- // insert each element of Vt in objHeap\;
- V$_t\rightarrow$objHeap \; 
- MinHeap cpuHeap(P)\;
- //Initially processors are empty with only background load\; 
+ // Build a max heap of V$_t$ \;
+ MaxHeap objHeap($|$V$_t|$)\;
+ objHeap$\leftarrow$V$_t$ \; 
 
+ // Build min heap of G$_p$\;
+ MinHeap cpuHeap($|$V$_p|$)\;
  cpuHeap$\leftarrow$G$_p$\;  
- \For{ i$\leftarrow$1 to nmigobj} {
+
+ \For{ i$\leftarrow$1 to $|objHeap|$} {
     o$\leftarrow$ objHeap.deleteMax()\;
     donor$\leftarrow$cpuHeap.deleteMin()\;
     Assign c to donor and record it in Map\;
@@ -100,7 +100,8 @@ by minimizing the maximum idle and the average idle times of the processor.
 Our motive behind the design was to make all the processors finish the
 execution at the same point of time. This approach takes relative speeds of the
 processors into consideration for balancing the load. We use the object time of
-the chares, which is defined as the time taken by the chare to run on a
+the chares
+, which is defined as the time taken by the chare to run on a
 particular processor, to measure the relative speeds of the processors. We
 explain in the next section, the reason to choose object time for the load
 balancing.  In this approach we try to average out the execution time by
@@ -109,7 +110,7 @@ much amount of load which helps all the PEs finish at almost the same time.
 %As it can be seen in the Figure \ref{fig:ideal} different PEs finish execution
 %at different points of time. As per the motive of the design we make all the
 %processors to finish at the same time. 
-The following two equations explains our design.  
+The following two equations explains our load distribution strategy.  
 
 %\begin{figure}
 %\centering
@@ -127,46 +128,48 @@ The following two equations explains our design.
       x_1 + x_2 + x_3 + \dots + x_n = N
     \end{equation}
 
-  where, w$_1$, w$_2$,\dots , w$_n$ are the weights in terms of times for executing
-  x$_1$, x$_2$,\dots , x$_n$ assigned objects by PE$_1$, PE$_2$,. . ., PE$_n$ 
-  and $N$ is the total number of objects. 
-  Before the load balancing, x$_1$, x$_2$, \dots,  x$_n$ are all the same. All the objects have
-  the same load/weight in terms of computation.  Each PE executes the same
-  number of objects before load balancing. Each PE before load balancing has
-  the same total load since each object has the same weight. By using the above
-  equation we get the proportionality based on which the number of objects will
-  be assigned for the iterations after load balancing. For instance, PE1 could
-  be 2 times faster than PE$_2$ and P$_3$ could be 0.5 times faster than PE$_2$. In
-  which case we will have the following proportionality: PE$_1$ : PE$_1$ : PE$_3$ = 2 :
-  1 : 0.5. Now based on this proportionality each PE is assigned such a load
-  that everyone can finish their execution at the same point of time.  
+  where, $w_i, 1 \leq i \leq n$ is the weight (in terms of times) for executing
+  $x_i$ number of objects on processors PE$_i$ and $N$ is the total number of objects. 
+  Before the load balancing all the x$_i$'s are the same as the Charm++
+  runtime does an equal distribution of work on each processor. 
+  The challenge is to choose the parameter $w_i$ in such a way that it correctly reflects the heterogeneity
+  in performance of $i^{th}$ processor at lower power values and on the other hand  
+  remain almost the same for higher power figures. We have chosen the metric of object time 
+  for this purpose. The next subsection explains our  choice.
+  %All the objects
+  %have the same load/weight in terms of computation.  Each PE executes the same
+  %number of objects before load balancing. Each PE before load balancing has
+  %the same total load since each object has the same weight. 
+  By using the above
+  equation we get the proportionality based on which the number of objects need
+  to be assigned while load balancing. For instance, processor PE$_1$ could
+  be 2 times faster than PE$_2$ and P$_3$ could be 0.5 times faster than
+  PE$_2$. In which case we will have the following proportionality: PE$_1$ :
+  PE$_1$ : PE$_3$ = 2 : 1 : 0.5. Now based on this proportionality each processor is
+  assigned such a load that everyone can finish their execution at the same
+  point of time.  
   
-  We use the second equation (\ref{eq:4}) to determine x$_1$, x$_1$, \dots,
-  x$_n$. We determine x$_1$, x$_1$,
-  \dots, x$_n$ values by solving for each x$_1$ up to x$_n$n by using both the
-  equations. Now the determined x$_1$, x$_2$ . . . x$_n$ values is the new load
-  for its respective PEs that help finish all of them at the same time. The
-  newly assigned load for each of the PEs is based on the relative speeds of
-  the processors. Solving the above two equations and assigning the new loads
-  to the processors will now help all the processors finish at the same time.
+  We use the both the equations (~\ref{eq:3}) and (~\ref{eq:4}) to determine
+  $x_i$'s, $1 \leq i \leq n$, which is the new load for its respective
+  processors that help finish all of them at almost the same time. The newly
+  assigned load $x_i$ for each of the PEs is proportional to $w_i$ which we
+  strive to reflect the relative speeds of the processors at a given power cap. 
 
 \subsection{Selection of metric ``w''} 
-We need to have a suitable metric for out parameter ``w''.  The selected metric
-should demonstrate heterogeneity at the lower power caps. We have considered
-processor idletime, processor overhead and processor object
-time\footnote{Object time is the time taken by a charm++ object to run on a
-  processor. This is also know as object walltime. Processor's object time is
-    the sum of walltimes of all the objects executing on that processor} as
-    candidates for our selection.  We measure these values for each processor
-    id at a power cap of 24W.  Figures \ref{fig:idletime_bgtimevsproc} and
-    \ref{fig:objtimevsproc} show the experimental plots.  The metric which has
-    the maximum variance depicts the heterogeneity in the best possible way.
-    Percentage change between the maximum and minimum idle time was $0.35$, and
-    the same for background time\footnote{Processor Background time amounts to
-      the overhead due to non migratable objects on that processor} was $1.41$
-      and that of processor object time was $4.09$ (This was partially due to a
-          misbehavior of node0:core0 as seen in the Figure
-          \ref{fig:objtimevsproc}) .  Using the above observation we chose
+We have considered processor idletime, processor background time
+\footnote{Processor background time amounts to the overhead due to non
+  migratable objects on that processor.} and processor object time \footnote{A
+    processor's object time is defined as the sum of object times of all the
+      objects executing on that processor.} as candidates for our selection.
+
+      We measure these values for each processor at a power cap of 24W.
+      Figures \ref{fig:idletime_bgtimevsproc} and \ref{fig:objtimevsproc} show
+      the experimental plots.  The metric which has the maximum variance
+      depicts the heterogeneity in the best possible way.  Percentage change
+      between the maximum and minimum idle time was $0.35$, and the same for
+      background time was $1.41$ and that of processor object time was $4.09$
+      (This was partially due to a misbehavior of node0:core0 as seen in the
+       Figure \ref{fig:objtimevsproc}).  Using the above observation we chose
       processor's object time as a metric for ``w'' because this shows the
       maximum variance at lower power caps. 
    
@@ -207,7 +210,7 @@ time\footnote{Object time is the time taken by a charm++ object to run on a
 \\
 \qquad (a) & \quad (b) \\
 \end{tabular}
-\caption{Idle and Overhad time over the cores at 24W power cap}
+\caption{Idle and Overhead time over the cores at 24W power cap}
 \label{fig:idletime_bgtimevsproc}
 \end{figure}
 
@@ -230,6 +233,6 @@ time\footnote{Object time is the time taken by a charm++ object to run on a
     \end{axis}
     \end{tikzpicture}
   }
-\caption{Collective chare time on each processor at 24W power cap.}
+\caption{{Processor object time on each processor at 24W power cap.}}
 \label{fig:objtimevsproc}
 \end{figure}
